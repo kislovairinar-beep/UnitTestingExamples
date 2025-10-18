@@ -10,7 +10,7 @@ namespace UnitTestingExamples
 
         public File(string filename, int size, string content)
         {
-            // ДОБАВИТЬ валидацию:
+            
             if (string.IsNullOrEmpty(filename))
                 throw new ArgumentException("Filename cannot be null or empty");
             
@@ -29,7 +29,7 @@ namespace UnitTestingExamples
         public int GetSize() => Size;
         public string GetContent() => Content;
 
-        // ДОБАВИТЬ методы Equals и GetHashCode:
+        
         public override bool Equals(object obj)
         {
             return obj is File file &&
