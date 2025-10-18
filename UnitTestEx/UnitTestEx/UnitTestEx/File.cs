@@ -1,47 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System;
 
-namespace UnitTestEx
+namespace UnitTestingExamples
 {
     public class File
     {
-        private string extension;
-        private string filename;
-        private string content;
-        private double size;
+        public string Filename { get; }
+        public int Size { get; }
+        public string Content { get; }
 
-        /**
-         * Construct object with passed filename and content, set extension based
-         * on filename and calculate size as half content length.
-         * @param filename File name (mandatory) with extension (optional), without directory tree (path separators:
-         *                 https://en.wikipedia.org/wiki/Path_(computing)#Representations_of_paths_by_operating_system_and_shell)
-         * @param content File content (could be empty, but must be set)
-         */
-        public File(String filename, String content)
+        public File(string filename, int size, string content)
         {
-            this.filename = filename;
-            this.content = content;
-            this.size = content.Length / 2;
-            this.extension = filename.Split("\\.")[filename.Split("\\.").Length - 1];
+            // ДОБАВИТЬ валидацию:
+            if (string.IsNullOrEmpty(filename))
+                throw new ArgumentException("Filename cannot be null or empty");
+            
+            if (size <= 0)
+                throw new ArgumentException("Size must be positive");
+            
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            Filename = filename;
+            Size = size;
+            Content = content;
         }
 
-        /**
-         * Get exactly file size
-         * @return File size
-         */
-        public double GetSize()
+        public string GetFilename() => Filename;
+        public int GetSize() => Size;
+        public string GetContent() => Content;
+
+        // ДОБАВИТЬ методы Equals и GetHashCode:
+        public override bool Equals(object obj)
         {
-            return (int)size;
+            return obj is File file &&
+                   Filename == file.Filename &&
+                   Size == file.Size &&
+                   Content == file.Content;
         }
 
-        /**
-         * Get File filename
-         * @return File filename
-         */
-        public string GetFilename()
+        public override int GetHashCode()
         {
-            return filename;
+            return HashCode.Combine(Filename, Size, Content);
         }
     }
 }
