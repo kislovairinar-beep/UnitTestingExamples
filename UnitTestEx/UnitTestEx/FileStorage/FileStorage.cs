@@ -1,32 +1,63 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using UnitTestEx;
+using System.Linq;
 
-namespace UnitTestEx
+namespace UnitTestingExamples
 {
     public class FileStorage
     {
-        private List<File> files = new List<File>();
-        private double availableSize = 100;
-        private double maxSize = 100;
+        private readonly int capacity;
+        private readonly Dictionary<string, File> files;
 
-        /**
-         * Construct object and set max storage size and available size according passed values
-         * @param size FileStorage size
-         */
-        public FileStorage(int size) {
-            maxSize = size;
-            availableSize += maxSize;
+        public FileStorage(int capacity)
+        {
+            // ДОБАВИТЬ валидацию:
+            if (capacity <= 0)
+                throw new ArgumentException("Capacity must be positive");
+
+            this.capacity = capacity;
+            this.files = new Dictionary<string, File>();
         }
 
-        /**
-         * Construct object and set max storage size and available size based on default value=100
-         */
-        public FileStorage() {
+        public bool AddFile(File file)
+        {
+            // ДОБАВИТЬ проверку на null:
+            if (file == null)
+                throw new ArgumentNullException(nameof(file));
+
+            if (files.ContainsKey(file.GetFilename()))
+                return false;
+
+            if (GetAvailableSize() < file.GetSize())
+                return false;
+
+            files[file.GetFilename()] = file;
+            return true;
         }
 
+        public bool RemoveFile(string filename)
+        {
+            return files.Remove(filename);
+        }
 
+        public File FindFile(string filename)
+        {
+            files.TryGetValue(filename, out File file);
+            return file;
+        }
+
+        public List<File> GetFiles()
+        {
+            return files.Values.ToList();
+        }
+
+        public int GetAvailableSize()
+        {
+            int usedSize = files.Values.Sum(file => file.GetSize());
+            return capacity - usedSize;
+        }
+    }
+}
         /**
          * Write file in storage if filename is unique and size is not more than available size
          * @param file to save in file storage
